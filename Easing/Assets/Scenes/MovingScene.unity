@@ -772,6 +772,7 @@ GameObject:
   - component: {fileID: 1736623972}
   - component: {fileID: 1736623971}
   - component: {fileID: 1736623970}
+  - component: {fileID: 1736623974}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -897,6 +898,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1736623974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736623969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53096cd8fa7be425ab71239d0a52931d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SubtitleSafeGizmo
+  subtitleHeight: 0.071
+  horizontalMargin: 0.05
+  subtitleAreaColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  gameplaySafeAreaColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &1794615979 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2832256600055342069, guid: c2d597502408d44518814cb9f0e4aebf, type: 3}
