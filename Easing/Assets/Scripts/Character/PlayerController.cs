@@ -8,6 +8,7 @@ public class PlayerController2D : MonoBehaviour
 
     private bool wantAttack;
     private float moveInput;
+
     public float CurrentMoveInput => moveInput;
     public float CurrentHorizontalSpeed =>
         movePhysically ? rb.linearVelocity.x : moveInput * moveSpeed;
@@ -27,18 +28,26 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField] private float lowJumpMultiplier = 2f;
 
     [Header("Jump Assist")]
-    [SerializeField] private float coyoteTime = 0.1f;      // seconds after leaving ground you can still jump
-    [SerializeField] private float jumpBufferTime = 0.1f;  // seconds before landing we remember a jump press
+    [SerializeField] private float coyoteTime = 0.1f;
+    [SerializeField] private float jumpBufferTime = 0.1f;
 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
+
+    public float CoyoteTimeCounter => coyoteTimeCounter;
+    public float JumpBufferCounter => jumpBufferCounter;
+    public float MaxCoyoteTime => coyoteTime;
+    public float MaxJumpBufferTime => jumpBufferTime;
+
     private bool grounded;
+    private bool wasGrounded;
     private bool isJumpHeld;
+    private bool hasJumpedSinceGrounded;
 
     private static readonly int YVelHash = Animator.StringToHash("YVelocity");
     private static readonly int GroundedHash = Animator.StringToHash("IsGrounded");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
-    private static readonly int SpeedHash = Animator.StringToHash("Speed"); // drives run anim
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
 
     bool IsGrounded() => Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundMask);
 
@@ -49,80 +58,125 @@ public class PlayerController2D : MonoBehaviour
 
     void Update()
     {
-        grounded = IsGrounded();
+        UpdateGroundedState();
+        UpdateJumpTimers();
+        HandleFacingDirection();
+        HandleAttack();
+        UpdateAnimator();
+    }
 
+    void FixedUpdate()
+    {
+        HandleMovement();
+        HandleJump();
+        ApplyGravityMultipliers();
+    }
+
+    void UpdateGroundedState()
+    {
+        wasGrounded = grounded;
+        grounded = IsGrounded();
+    }
+
+    void UpdateJumpTimers()
+    {
         if (grounded)
         {
             coyoteTimeCounter = coyoteTime;
+
+            if (!wasGrounded)
+                hasJumpedSinceGrounded = false;
         }
         else
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
 
+        coyoteTimeCounter = Mathf.Max(coyoteTimeCounter, 0f);
+
         if (jumpBufferCounter > 0f)
         {
             jumpBufferCounter -= Time.deltaTime;
+            jumpBufferCounter = Mathf.Max(jumpBufferCounter, 0f);
         }
+    }
 
-        if (Mathf.Abs(moveInput) > 0.01f)
-        {
-            var scale = anim.gameObject.transform.localScale;
-            scale.x = Mathf.Sign(moveInput) * Mathf.Abs(scale.x);
-            anim.gameObject.transform.localScale = scale;
-        }
+    void HandleFacingDirection()
+    {
+        if (anim == null) return;
+        if (Mathf.Abs(moveInput) <= 0.01f) return;
 
-        if (wantAttack)
-        {
-            var st = anim.GetCurrentAnimatorStateInfo(0);
-            bool inAttack = (st.IsTag("Attack") || st.IsName("Attack")) && st.normalizedTime < 1f;
-            if (!inAttack && !anim.IsInTransition(0))
-                anim.SetTrigger(AttackHash);
+        var scale = anim.transform.localScale;
+        scale.x = Mathf.Sign(moveInput) * Mathf.Abs(scale.x);
+        anim.transform.localScale = scale;
+    }
 
-            wantAttack = false;
-        }
+    void HandleAttack()
+    {
+        if (!wantAttack || anim == null) return;
+
+        var st = anim.GetCurrentAnimatorStateInfo(0);
+        bool inAttack = (st.IsTag("Attack") || st.IsName("Attack")) && st.normalizedTime < 1f;
+
+        if (!inAttack && !anim.IsInTransition(0))
+            anim.SetTrigger(AttackHash);
+
+        wantAttack = false;
+    }
+
+    void UpdateAnimator()
+    {
+        if (anim == null) return;
 
         anim.SetBool(GroundedHash, grounded);
         anim.SetFloat(YVelHash, rb.linearVelocity.y);
         anim.SetFloat(SpeedHash, Mathf.Abs(moveInput));
     }
 
-    void FixedUpdate()
+    void HandleMovement()
     {
-        if (movePhysically)
-        {
-            float targetXVel = moveInput * moveSpeed;
-            rb.linearVelocity = new Vector2(targetXVel, rb.linearVelocity.y);
-        }
-        else
-        {
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-        }
-
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-
-            coyoteTimeCounter = 0f;
-            jumpBufferCounter = 0f;
-        }
-
-        ApplyGravityMultipliers();
+        var vel = rb.linearVelocity;
+        vel.x = movePhysically ? moveInput * moveSpeed : 0f;
+        rb.linearVelocity = vel;
     }
 
-    private void ApplyGravityMultipliers()
+    void HandleJump()
     {
-        // Apply fall multiplier for better feel
-        if (rb.linearVelocity.y < 0)
+        if (coyoteTimeCounter > 0f &&
+            jumpBufferCounter > 0f &&
+            !hasJumpedSinceGrounded)
         {
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+            PerformJump();
         }
-        else if (rb.linearVelocity.y > 0 && !isJumpHeld)
+    }
+
+    void PerformJump()
+    {
+        var vel = rb.linearVelocity;
+        vel.y = 0f;
+        rb.linearVelocity = vel;
+
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+        coyoteTimeCounter = 0f;
+        jumpBufferCounter = 0f;
+        hasJumpedSinceGrounded = true;
+    }
+
+    void ApplyGravityMultipliers()
+    {
+        var vel = rb.linearVelocity;
+
+        if (vel.y < 0f)
         {
-            // Apply low jump multiplier if jump button is released (variable jump height)
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
+            vel += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1f) * Time.fixedDeltaTime;
         }
+        else if (vel.y > 0f && !isJumpHeld)
+        {
+            vel += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1f) * Time.fixedDeltaTime;
+        }
+
+        rb.linearVelocity = vel;
     }
 
     public void Jump()
