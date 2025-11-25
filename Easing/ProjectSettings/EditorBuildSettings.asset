@@ -8,9 +8,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/EasingScene.unity
     guid: 0b97375ddcdff4edbac62ccd6889aae6
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SeedScene.unity
     guid: 5116390351029403089a00884ea1ad49
+  - enabled: 1
+    path: Assets/Scenes/MovingScene.unity
+    guid: 744d21c40618a4b31a14b07862c757f0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

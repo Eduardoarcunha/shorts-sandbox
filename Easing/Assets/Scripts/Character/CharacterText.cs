@@ -1,6 +1,6 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
+using DG.Tweening;
 
 public enum TextType { None, Position, Velocity }
 
@@ -31,6 +31,7 @@ public class CharacterText : MonoBehaviour
         else if (topText != null)
         {
             topText.gameObject.SetActive(true);
+            PopUp();
         }
     }
 
@@ -50,6 +51,32 @@ public class CharacterText : MonoBehaviour
                 topText.text = $"X={vel.x:F2} Y={vel.y:F2}";
                 break;
         }
+    }
+
+    void PopUp()
+    {
+        if (topText == null)
+            return;
+
+        topText.transform.DOKill();
+        topText.transform.localScale = Vector3.one * 0.5f;
+        topText.transform
+            .DOScale(1f, 0.2f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(RunPulseAnimation);
+    }
+
+    void RunPulseAnimation()
+    {
+        if (topText == null)
+            return;
+
+        topText.transform.DOKill();
+        topText.transform.localScale = Vector3.one;
+        topText.transform
+            .DOScale(1.02f, 1f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
     }
 
     public void SetTextTypePosition() => UpdateTextType(TextType.Position);

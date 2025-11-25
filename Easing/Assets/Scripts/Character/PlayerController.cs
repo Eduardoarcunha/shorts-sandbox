@@ -6,15 +6,14 @@ public class PlayerController2D : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField] private Animator anim;
 
-    private bool wantJump;
     private bool wantAttack;
-    private float moveInput; // -1..1 from input system
-    public float CurrentMoveInput => moveInput;   // -1..1 from input
+    private float moveInput;
+    public float CurrentMoveInput => moveInput;
     public float CurrentHorizontalSpeed =>
         movePhysically ? rb.linearVelocity.x : moveInput * moveSpeed;
 
     [Header("Movement")]
-    [SerializeField] private bool movePhysically = true;   // If false, player stays in place (for endless runner BG trick)
+    [SerializeField] private bool movePhysically = true;
     [SerializeField] private float moveSpeed = 5f;
 
     [Header("Jump")]
@@ -22,6 +21,19 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundRadius = 0.12f;
     [SerializeField] private LayerMask groundMask;
+
+    [Header("Physics Improvements")]
+    [SerializeField] private float fallMultiplier = 2.5f;
+    [SerializeField] private float lowJumpMultiplier = 2f;
+
+    [Header("Jump Assist")]
+    [SerializeField] private float coyoteTime = 0.1f;      // seconds after leaving ground you can still jump
+    [SerializeField] private float jumpBufferTime = 0.1f;  // seconds before landing we remember a jump press
+
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
+    private bool grounded;
+    private bool isJumpHeld;
 
     private static readonly int YVelHash = Animator.StringToHash("YVelocity");
     private static readonly int GroundedHash = Animator.StringToHash("IsGrounded");
@@ -33,13 +45,25 @@ public class PlayerController2D : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.freezeRotation = true;
-        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
     void Update()
     {
-        var grounded = IsGrounded();
+        grounded = IsGrounded();
+
+        if (grounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        if (jumpBufferCounter > 0f)
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
 
         if (Mathf.Abs(moveInput) > 0.01f)
         {
@@ -75,15 +99,43 @@ public class PlayerController2D : MonoBehaviour
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         }
 
-        if (wantJump && IsGrounded())
+        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+            coyoteTimeCounter = 0f;
+            jumpBufferCounter = 0f;
         }
-        wantJump = false;
+
+        ApplyGravityMultipliers();
     }
 
-    public void Jump() => wantJump = true;
+    private void ApplyGravityMultipliers()
+    {
+        // Apply fall multiplier for better feel
+        if (rb.linearVelocity.y < 0)
+        {
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+        }
+        else if (rb.linearVelocity.y > 0 && !isJumpHeld)
+        {
+            // Apply low jump multiplier if jump button is released (variable jump height)
+            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
+        }
+    }
+
+    public void Jump()
+    {
+        jumpBufferCounter = jumpBufferTime;
+        isJumpHeld = true;
+    }
+
+    public void OnJumpUp()
+    {
+        isJumpHeld = false;
+    }
+
     public void Attack() => wantAttack = true;
 
     public void SetMoveInput(float input)

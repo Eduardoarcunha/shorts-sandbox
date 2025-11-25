@@ -16,13 +16,21 @@ public class PlayerInputReader : MonoBehaviour
         if (jump != null) jump.action.Enable();
         if (attack != null) attack.action.Enable();
 
-        if (jump != null) jump.action.performed += OnJump;
+        if (jump != null)
+        {
+            jump.action.performed += OnJump;
+            jump.action.canceled += OnJump;
+        }
         if (attack != null) attack.action.performed += OnAttack;
     }
 
     void OnDisable()
     {
-        if (jump != null) jump.action.performed -= OnJump;
+        if (jump != null)
+        {
+            jump.action.performed -= OnJump;
+            jump.action.canceled -= OnJump;
+        }
         if (attack != null) attack.action.performed -= OnAttack;
 
         if (move != null) move.action.Disable();
@@ -40,7 +48,9 @@ public class PlayerInputReader : MonoBehaviour
 
     void OnJump(InputAction.CallbackContext ctx)
     {
+        if (controller == null) return;
         if (ctx.performed) controller.Jump();
+        if (ctx.canceled) controller.OnJumpUp();
     }
 
     void OnAttack(InputAction.CallbackContext ctx)
