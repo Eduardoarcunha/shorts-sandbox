@@ -130,7 +130,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 7128585627397261964}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 181093882}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcfd12cfe390545e5a4e43adadd96e7c, type: 3}
   m_Name: 
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 181093882}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 928b0e705f50d483195b28428ad25a9c, type: 3}
   m_Name: 
@@ -988,6 +988,10 @@ PrefabInstance:
     - target: {fileID: 2382526401597054054, guid: 1c00c31cf8e634e4fa646ee316a04a8a, type: 3}
       propertyPath: m_SpriteTilingProperty.adaptiveTilingThreshold
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4185574694208003198, guid: 1c00c31cf8e634e4fa646ee316a04a8a, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5221554188146532406, guid: 1c00c31cf8e634e4fa646ee316a04a8a, type: 3}
       propertyPath: m_LocalScale.y
