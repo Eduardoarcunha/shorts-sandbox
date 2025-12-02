@@ -16,7 +16,7 @@ public class BackgroundLayer
 public class ParallaxBackground : MonoBehaviour
 {
     [Header("Player reference")]
-    [SerializeField] private PlayerController2D player;  // has CurrentHorizontalSpeed
+    [SerializeField] private PlayerController player;  // has CurrentHorizontalSpeed
 
     [Header("Camera (for recycling)")]
     [SerializeField] private Transform cameraTransform;  // drag main camera or leave empty

@@ -4,7 +4,7 @@ using TMPro;
 
 public class PlayerTimerVisualizer : MonoBehaviour
 {
-    [SerializeField] private PlayerController2D player;
+    [SerializeField] private PlayerController player;
 
     [Header("Coyote Time UI")]
     [SerializeField] private Slider coyoteSlider;
@@ -19,6 +19,15 @@ public class PlayerTimerVisualizer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI jumpBufferText;
     [SerializeField] private Color jumpBufferActiveColor = Color.yellow;
     [SerializeField] private Color jumpBufferInactiveColor = Color.gray;
+
+    void Start()
+    {
+        if (coyoteSlider != null) coyoteSlider.gameObject.SetActive(false);
+        if (coyoteText != null) coyoteText.gameObject.SetActive(false);
+
+        if (jumpBufferSlider != null) jumpBufferSlider.gameObject.SetActive(false);
+        if (jumpBufferText != null) jumpBufferText.gameObject.SetActive(false);
+    }
 
     private void Update()
     {
@@ -56,6 +65,30 @@ public class PlayerTimerVisualizer : MonoBehaviour
         {
             jumpBufferFillImage.color = current > 0 ? jumpBufferActiveColor : jumpBufferInactiveColor;
         }
+    }
+
+    public void EnableCoyoteUI()
+    {
+        if (coyoteSlider != null) coyoteSlider.gameObject.SetActive(true);
+        if (coyoteText != null) coyoteText.gameObject.SetActive(true);
+    }
+
+    public void DisableCoyoteUI()
+    {
+        if (coyoteSlider != null) coyoteSlider.gameObject.SetActive(false);
+        if (coyoteText != null) coyoteText.gameObject.SetActive(false);
+    }
+
+    public void EnableJumpBufferUI()
+    {
+        if (jumpBufferSlider != null) jumpBufferSlider.gameObject.SetActive(true);
+        if (jumpBufferText != null) jumpBufferText.gameObject.SetActive(true);
+    }
+
+    public void DisableJumpBufferUI()
+    {
+        if (jumpBufferSlider != null) jumpBufferSlider.gameObject.SetActive(false);
+        if (jumpBufferText != null) jumpBufferText.gameObject.SetActive(false);
     }
 }
 

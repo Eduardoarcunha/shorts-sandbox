@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class SceneOrchestrator : MonoBehaviour
 {
     [SerializeField] private InputActionReference submitAction;
+    [SerializeField] private InputActionReference quitAction;
 
     [SerializeField] private List<UnityEvent> submitEvents = new List<UnityEvent>();
     public int currentEventIndex = 0;
@@ -17,6 +18,12 @@ public class SceneOrchestrator : MonoBehaviour
 
         if (submitAction != null)
             submitAction.action.performed += OnSubmit;
+
+        if (quitAction != null)
+            quitAction.action.Enable();
+
+        if (quitAction != null)
+            quitAction.action.performed += ctx => QuitApplication();
     }
 
     void OnDisable()
@@ -38,6 +45,11 @@ public class SceneOrchestrator : MonoBehaviour
                 currentEventIndex++;
             }
         }
+    }
+
+    public void QuitApplication()
+    {
+        Application.Quit();
     }
 
 }

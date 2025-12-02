@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-public class PlayerController2D : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     [SerializeField] private Animator anim;
@@ -43,6 +43,7 @@ public class PlayerController2D : MonoBehaviour
     private bool wasGrounded;
     private bool isJumpHeld;
     private bool hasJumpedSinceGrounded;
+    private Vector2 groundVelocity;
 
     private static readonly int YVelHash = Animator.StringToHash("YVelocity");
     private static readonly int GroundedHash = Animator.StringToHash("IsGrounded");
@@ -82,7 +83,10 @@ public class PlayerController2D : MonoBehaviour
     {
         if (grounded)
         {
-            coyoteTimeCounter = coyoteTime;
+            if (hasJumpedSinceGrounded)
+                coyoteTimeCounter = 0;
+            else
+                coyoteTimeCounter = coyoteTime;
 
             if (!wasGrounded)
                 hasJumpedSinceGrounded = false;
@@ -136,7 +140,8 @@ public class PlayerController2D : MonoBehaviour
     void HandleMovement()
     {
         var vel = rb.linearVelocity;
-        vel.x = movePhysically ? moveInput * moveSpeed : 0f;
+        float baseX = movePhysically ? moveInput * moveSpeed : 0f;
+        vel.x = baseX + groundVelocity.x;
         rb.linearVelocity = vel;
     }
 
@@ -198,4 +203,9 @@ public class PlayerController2D : MonoBehaviour
     }
 
     public void SetMovePhysically(bool value) => movePhysically = value;
+
+    public void SetGroundVelocity(Vector2 velocity)
+    {
+        groundVelocity = velocity;
+    }
 }

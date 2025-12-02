@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputReader : MonoBehaviour
 {
-    [SerializeField] private PlayerController2D controller;
+    [SerializeField] private PlayerController controller;
 
     [Header("Actions")]
     [SerializeField] private InputActionReference move;
