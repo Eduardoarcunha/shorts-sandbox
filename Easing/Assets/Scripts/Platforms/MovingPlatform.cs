@@ -30,4 +30,14 @@ public class MovingPlatform : MonoBehaviour
 
         transform.DOMove(targetPosition, duration).SetEase(easeType).OnComplete(MoveToNextPoint);
     }
+
+    public void Rotate20()
+    {
+        transform.DORotate(new Vector3(0, 0, transform.eulerAngles.z + 20f), 0.5f).SetEase(Ease.InOutSine);
+    }
+
+    public void RotateMinus20()
+    {
+        transform.DORotate(new Vector3(0, 0, transform.eulerAngles.z - 20f), 0.5f).SetEase(Ease.InOutSine);
+    }
 }

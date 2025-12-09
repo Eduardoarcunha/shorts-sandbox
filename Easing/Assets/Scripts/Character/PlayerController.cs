@@ -10,8 +10,9 @@ public class PlayerController : MonoBehaviour
     private float moveInput;
 
     public float CurrentMoveInput => moveInput;
-    public float CurrentHorizontalSpeed =>
-        movePhysically ? rb.linearVelocity.x : moveInput * moveSpeed;
+    public float CurrentHorizontalSpeed => movePhysically ? rb.linearVelocity.x : moveInput * moveSpeed;
+    public float CurrentInputSpeed => moveInput * moveSpeed;
+    public float GroundSpeed => groundVelocity.x;
 
     [Header("Movement")]
     [SerializeField] private bool movePhysically = true;

@@ -7,6 +7,7 @@ public class SceneOrchestrator : MonoBehaviour
 {
     [SerializeField] private InputActionReference submitAction;
     [SerializeField] private InputActionReference quitAction;
+    [SerializeField] private InputActionReference restartAction;
 
     [SerializeField] private List<UnityEvent> submitEvents = new List<UnityEvent>();
     public int currentEventIndex = 0;
@@ -24,6 +25,12 @@ public class SceneOrchestrator : MonoBehaviour
 
         if (quitAction != null)
             quitAction.action.performed += ctx => QuitApplication();
+
+        if (restartAction != null)
+            restartAction.action.Enable();
+
+        if (restartAction != null)
+            restartAction.action.performed += ctx => ReloadScene();
     }
 
     void OnDisable()
@@ -50,6 +57,12 @@ public class SceneOrchestrator : MonoBehaviour
     public void QuitApplication()
     {
         Application.Quit();
+    }
+
+    public void ReloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 
 }
