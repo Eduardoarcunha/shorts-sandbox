@@ -44,6 +44,7 @@ public class PlayerInputReader : MonoBehaviour
 
         Vector2 moveValue = move.action.ReadValue<Vector2>();
         controller.SetMoveInput(moveValue.x);
+        controller.SetVerticalInput(moveValue.y);
     }
 
     void OnJump(InputAction.CallbackContext ctx)

@@ -8,8 +8,10 @@ public class PlayerController : MonoBehaviour
 
     private bool wantAttack;
     private float moveInput;
+    private float verticalInput;
 
     public float CurrentMoveInput => moveInput;
+    public float CurrentVerticalInput => verticalInput;
     public float CurrentHorizontalSpeed => movePhysically ? rb.linearVelocity.x : moveInput * moveSpeed;
     public float CurrentInputSpeed => moveInput * moveSpeed;
     public float GroundSpeed => groundVelocity.x;
@@ -201,6 +203,11 @@ public class PlayerController : MonoBehaviour
     public void SetMoveInput(float input)
     {
         moveInput = Mathf.Clamp(input, -1f, 1f);
+    }
+
+    public void SetVerticalInput(float input)
+    {
+        verticalInput = Mathf.Clamp(input, -1f, 1f);
     }
 
     public void SetMovePhysically(bool value) => movePhysically = value;
