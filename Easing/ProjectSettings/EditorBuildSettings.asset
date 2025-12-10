@@ -17,9 +17,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/JumpingScene.unity
     guid: 3d67b915afb0945078d0d766500fcb08
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MovingPlatform.unity
     guid: 63aec62b74e9948ce830a09fd56f26ff
+  - enabled: 1
+    path: Assets/Scenes/OneWayPlatform.unity
+    guid: b76f7b36db1df42f58b36e04c331bfa4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

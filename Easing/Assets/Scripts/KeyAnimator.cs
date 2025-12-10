@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class KeyAnimator : MonoBehaviour
 {
+    [SerializeField] private GameObject parentObject;
+
     [SerializeField] private InputActionReference keyAction;
 
     [SerializeField] private Image keyImage;
@@ -60,4 +62,7 @@ public class KeyAnimator : MonoBehaviour
             keyImage.sprite = keyUpSprite;
         }
     }
+
+    public void ShowObject() => parentObject.SetActive(true);
+    public void Hide() => parentObject.SetActive(false);
 }

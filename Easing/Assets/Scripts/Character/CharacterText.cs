@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using DG.Tweening;
 
-public enum TextType { None, Position, Velocity }
+public enum TextType { None, Position, Velocity, YPos }
 
 public class CharacterText : MonoBehaviour
 {
@@ -51,6 +51,10 @@ public class CharacterText : MonoBehaviour
             case TextType.Position:
                 Vector3 pos = characterController.transform.position;
                 topText.text = $"X={pos.x:F2} Y={pos.y:F2}";
+                break;
+            case TextType.YPos:
+                float yPos = characterController.transform.position.y;
+                topText.text = $"Y={yPos:F2}";
                 break;
             case TextType.Velocity:
                 float vel = characterController.CurrentHorizontalSpeed;
@@ -102,5 +106,6 @@ public class CharacterText : MonoBehaviour
 
     public void SetTextTypePosition() => UpdateTextType(TextType.Position);
     public void SetTextTypeVelocity() => UpdateTextType(TextType.Velocity);
+    public void SetTextTypeYPos() => UpdateTextType(TextType.YPos);
     public void SetTextTypeNone() => UpdateTextType(TextType.None);
 }
